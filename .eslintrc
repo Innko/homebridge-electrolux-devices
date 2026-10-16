@@ -11,7 +11,7 @@
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
-    "ignorePatterns": ["dist"],
+    "ignorePatterns": ["dist", "src/obsolete"],
     "rules": {
         "semi": ["off"],
         "dot-notation": "off",

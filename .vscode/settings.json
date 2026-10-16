@@ -9,5 +9,8 @@
     "eslint.format.enable": true,
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "airun.settings": {
+        "workspaceId": "03140a37-7897-4bba-b33c-83f82fbfe694"
+    }
 }

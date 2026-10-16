@@ -153,13 +153,15 @@ export class ElectroluxDevicesPlatform implements DynamicPlatformPlugin {
                 await this.refreshAccessToken();
             } catch (err) {
                 if (err instanceof AxiosError) {
-                    const axiosError = err as AxiosError;
-                    if (axiosError.response?.status === 401) {
-                        throw new Error(
-                            'Invalid refresh token! Please configure the plugin again using this guide: https://github.com/tomekkleszcz/homebridge-electrolux-devices?tab=readme-ov-file#-installation'
-                        );
-                    }
+                    const axiosError = err as AxiosError<{ message: string }>;
+                    const detail =
+                        axiosError.response?.data?.message ??
+                        axiosError.message;
+                    throw new Error(
+                        `Invalid refresh token (${detail})! Please configure the plugin again using this guide: https://github.com/tomekkleszcz/homebridge-electrolux-devices?tab=readme-ov-file#-installation`
+                    );
                 }
+                throw err;
             }
             return;
         }
@@ -187,19 +189,19 @@ export class ElectroluxDevicesPlatform implements DynamicPlatformPlugin {
             this.accessToken = data.accessToken;
             this.refreshToken = data.refreshToken;
             this.tokenExpirationDate = data.tokenExpirationDate;
-
-            if (
-                !this.tokenExpirationDate ||
-                Date.now() >= this.tokenExpirationDate
-            ) {
-                await this.refreshAccessToken();
-            }
         } catch {
             fs.unlinkSync(storagePath);
 
             throw new Error(
                 'Malformed auth data file! Please configure the plugin again using this guide: https://github.com/tomekkleszcz/homebridge-electrolux-devices?tab=readme-ov-file#-installation'
             );
+        }
+
+        if (
+            !this.tokenExpirationDate ||
+            Date.now() >= this.tokenExpirationDate
+        ) {
+            await this.refreshAccessToken();
         }
     }
 
@@ -346,6 +348,14 @@ export class ElectroluxDevicesPlatform implements DynamicPlatformPlugin {
                 undefined
                     ? existingAccessory.platformAccessory.context.appliance
                     : await this.getApplianceInfo(applianceItem.applianceId);
+
+            if (!appliance) {
+                this.log.warn(
+                    'Appliance info not found for:',
+                    applianceItem.applianceId
+                );
+                return;
+            }
 
             if (existingAccessory) {
                 this.log.info(

@@ -4,6 +4,7 @@ const prettier = require('eslint-config-prettier');
 const prettierPlugin = require('eslint-plugin-prettier');
 
 module.exports = tseslint.config(
+    { ignores: ['dist/**', 'src/obsolete/**'] },
     eslint.configs.recommended,
     ...tseslint.configs.recommended,
     prettier,
@@ -11,7 +12,6 @@ module.exports = tseslint.config(
         plugins: {
             prettier: prettierPlugin
         },
-        ignores: ['dist/**'],
         languageOptions: {
             ecmaVersion: 2018,
             sourceType: 'module',
