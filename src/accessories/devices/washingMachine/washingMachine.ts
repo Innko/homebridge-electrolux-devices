@@ -116,9 +116,7 @@ export class WashingMachine extends ElectroluxAccessoryController {
     }
 
     async getContactSensorState(): Promise<CharacteristicValue> {
-        // Door locked = washing in progress = sensor CLOSED (no alert)
-        // Door unlocked = cycle done = sensor OPEN (triggers notification)
-        return this.state.properties.reported.doorLock === 'ON'
+        return this.state.properties.reported.doorState === 'CLOSED'
             ? this.platform.Characteristic.ContactSensorState.CONTACT_DETECTED
             : this.platform.Characteristic.ContactSensorState
                   .CONTACT_NOT_DETECTED;
@@ -153,5 +151,6 @@ export class WashingMachine extends ElectroluxAccessoryController {
             this.platform.Characteristic.ContactSensorState,
             await this.getContactSensorState()
         );
+
     }
 }
